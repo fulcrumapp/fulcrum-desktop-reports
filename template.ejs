@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html class='no-js' lang='en'>
+  <head>
+    <title>Fulcrum Report</title>
+    <style>
+      @font-face {
+        font-family: "Open Sans", sans-serif;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        font-family: "Open Sans", sans-serif;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 1050px;
+        font-size: 16px;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+        padding: 0;
+      }
+
+      .field {
+        padding: 4px 0;
+        border-bottom: 1px solid #cbcbcb;
+        page-break-inside: avoid;
+      }
+
+      .field-label {
+        font-weight: normal;
+        float: left;
+        width: 380px;
+        padding-right: 20px;
+        text-align: left;
+        font-size: 16px;
+      }
+
+      .field-label-full {
+        font-weight: normal;
+        float: left;
+        width: 1050px;
+        text-align: left;
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .field-value {
+        float: left;
+        width: 650px;
+        font-size: 16px;
+      }
+
+      .field-value .photo {
+        max-width: 650px;
+        max-height: 650px;
+        margin-top: 6px;
+      }
+
+      .field-value .signature {
+        max-width: 650px;
+        max-height: 650px;
+        margin-top: 6px;
+      }
+
+      .field-value .status-color {
+        float: left;
+        width: 20px;
+        height: 20px;
+        border-radius: 2px;
+        margin-right: 8px;
+        position: relative;
+        top: 0px;
+      }
+
+      .field-section {
+        float: left;
+        width: 1050px;
+        font-weight: bold;
+        font-size: 22px;
+        border-bottom: 1px solid #cbcbcb;
+        margin-top: 20px;
+      }
+
+      .field-section.metadata {
+        margin-top: 0;
+      }
+
+      .field-clear {
+        height: 0;
+        clear: both;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='root'>
+      <h1 class='field-section metadata'><%= record.displayValue %></h1>
+      <div class='field-clear'></div>
+
+      <div class='field'>
+        <div class='field-label'>Created</div>
+        <div class='field-value'><%= DateUtils.formatISOTimestamp(record.clientCreatedAt) %></div>
+        <div class='field-clear'></div>
+      </div>
+
+      <div class='field'>
+        <div class='field-label'>Updated</div>
+        <div class='field-value'><%= DateUtils.formatISOTimestamp(record.clientUpdatedAt) %></div>
+        <div class='field-clear'></div>
+      </div>
+
+      <% if (record.hasCoordinate) { %>
+      <div class='field'>
+        <div class='field-label'>Location</div>
+        <div class='field-value'><%= record.latitude %>, <%= record.longitude %></div>
+        <div class='field-clear'></div>
+      </div>
+      <% } %>
+
+      <% renderValues(record, function(element, value) { %>
+        <% if (element.isSectionElement) { %>
+          <h1 class="field-section"><%= element.label %></h1>
+          <div class='field-clear'></div>
+        <% } else if (element.isRepeatableElement) { %>
+          <h1 class="field-section"><%= value.displayValue %></h1>
+          <div class='field-clear'></div>
+        <% } else { %>
+          <% if (!value.isEmpty) { %>
+            <div class="field">
+              <h2 class="field-label"><%= element.label %></h2>
+              <div class="field-value"><%= value.displayValue %></div>
+              <div class='field-clear'></div>
+            </div>
+          <% } %>
+        <% } %>
+      <% }) %>
+    </div>
+  </body>
+</html>
