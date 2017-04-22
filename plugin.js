@@ -36,6 +36,7 @@ export default class ReportPlugin extends Plugin {
   async initialize({app}) {
     this.template = fs.readFileSync(path.join(__dirname, 'template.ejs')).toString();
     this.ReportGenerator = app.api.ReportGenerator;
+    this.app = app;
     // app.on('record:save', this.onRecordSave);
   }
 
@@ -46,7 +47,7 @@ export default class ReportPlugin extends Plugin {
   runReport = async ({record, template, header, footer, cover}) => {
     const params = {
       reportName: record.displayValue || record.id,
-      directory: REPORT_PATH,
+      directory: this.app.dir('reports'),
       template: template || this.template,
       header,
       footer,
