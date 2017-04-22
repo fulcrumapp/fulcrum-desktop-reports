@@ -1,11 +1,6 @@
-import Plugin from '../../src/plugin';
-import Generator from '../../src/reports/generator';
-import mkdirp from 'mkdirp';
+import Plugin from 'fulcrum-sync-plugin';
 import path from 'path';
 import fs from 'fs';
-import { DateUtils } from 'fulcrum-core';
-
-const REPORT_PATH = path.join('.', 'reports');
 
 export default class ReportPlugin extends Plugin {
   // return true to enable this plugin
@@ -14,11 +9,12 @@ export default class ReportPlugin extends Plugin {
   }
 
   async runTask({app, yargs}) {
-    this.args = yargs.usage('Usage: reports --org [org]')
-      .demandOption([ 'org' ])
-      .argv;
+    const args =
+      yargs.usage('Usage: reports --org [org]')
+        .demandOption([ 'org' ])
+        .argv;
 
-    const account = await this.fetchAccount(this.args.org);
+    const account = await app.fetchAccount(args.org);
 
     if (account) {
       const form = await account.findFirstForm({name: 'GeoBooze'});
@@ -27,19 +23,19 @@ export default class ReportPlugin extends Plugin {
 
       for (const record of records) {
         await record.getForm();
+
         console.log('running', record.displayValue);
+
         await this.runReport({record});
       }
     } else {
-      console.error('Unable to find account', this.args.org);
+      console.error('Unable to find account', args.org);
     }
   }
 
   async initialize({app}) {
     this.template = fs.readFileSync(path.join(__dirname, 'template.ejs')).toString();
-
-    mkdirp.sync(REPORT_PATH);
-
+    this.ReportGenerator = app.api.ReportGenerator;
     // app.on('record:save', this.onRecordSave);
   }
 
@@ -56,14 +52,14 @@ export default class ReportPlugin extends Plugin {
       footer,
       cover,
       data: {
-        DateUtils: DateUtils,
+        DateUtils: this.app.api.core.DateUtils,
         record: record,
         renderValues: this.renderValues
       },
       ejsOptions: {}
     };
 
-    await Generator.generate(params);
+    await this.ReportGenerator.generate(params);
   }
 
   renderValues = (feature, renderFunction) => {
