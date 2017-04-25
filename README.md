@@ -22,4 +22,4 @@ Generate custom PDF reports from Fulcrum data.
 
 ### Customize
 
-Edit `template.ejs`
+Edit `template.ejs` or use `--template file.ejs`
