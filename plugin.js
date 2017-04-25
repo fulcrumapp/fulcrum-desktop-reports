@@ -10,16 +10,16 @@ export default class ReportPlugin extends Plugin {
 
   async runTask({app, yargs}) {
     const args =
-      yargs.usage('Usage: reports --org [org]')
-        .demandOption([ 'org' ])
+      yargs.usage('Usage: reports --org [org] --form [form name] --where [where clause] --template [template file]')
+        .demandOption([ 'org', 'form' ])
         .argv;
 
     const account = await app.fetchAccount(args.org);
 
     if (account) {
-      const form = await account.findFirstForm({name: 'GeoBooze'});
+      const form = await account.findFirstForm({name: args.form});
 
-      const records = await form.findRecordsBySQL("beer_type_value = 'Amber Ale'");
+      const records = await form.findRecordsBySQL(args.where);
 
       for (const record of records) {
         await record.getForm();
@@ -34,7 +34,9 @@ export default class ReportPlugin extends Plugin {
   }
 
   async initialize({app}) {
-    this.template = fs.readFileSync(path.join(__dirname, 'template.ejs')).toString();
+    const templateFile = app.args.template || 'template.ejs';
+
+    this.template = fs.readFileSync(path.join(__dirname, templateFile)).toString();
     this.ReportGenerator = app.api.ReportGenerator;
     this.app = app;
     // app.on('record:save', this.onRecordSave);
