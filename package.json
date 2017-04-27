@@ -4,6 +4,19 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "fulcrum-sync-plugin": "^1.0.1"
+    "fulcrum-sync-plugin": "^1.2.0"
+  },
+  "babel": {
+    "presets": [
+      "stage-0",
+      [
+        "env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ]
   }
 }

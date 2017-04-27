@@ -1,25 +1,19 @@
-import Plugin from 'fulcrum-sync-plugin';
 import path from 'path';
 import fs from 'fs';
+import { ReportGenerator, core } from 'fulcrum';
 
-export default class ReportPlugin extends Plugin {
-  // return true to enable this plugin
-  get enabled() {
-    return false;
-  }
+export default class {
+  async task() {
+    fulcrum.yargs.usage('Usage: reports --org [org] --form [form name] --where [where clause] --template [template file]')
+      .demandOption([ 'org', 'form' ])
+      .argv;
 
-  async runTask({app, yargs}) {
-    const args =
-      yargs.usage('Usage: reports --org [org] --form [form name] --where [where clause] --template [template file]')
-        .demandOption([ 'org', 'form' ])
-        .argv;
-
-    const account = await app.fetchAccount(args.org);
+    const account = await fulcrum.fetchAccount(fulcrum.args.org);
 
     if (account) {
-      const form = await account.findFirstForm({name: args.form});
+      const form = await account.findFirstForm({name: fulcrum.args.form});
 
-      const records = await form.findRecordsBySQL(args.where);
+      const records = await form.findRecordsBySQL(fulcrum.args.where);
 
       for (const record of records) {
         await record.getForm();
@@ -29,17 +23,16 @@ export default class ReportPlugin extends Plugin {
         await this.runReport({record});
       }
     } else {
-      console.error('Unable to find account', args.org);
+      console.error('Unable to find account', fulcrum.args.org);
     }
   }
 
-  async initialize({app}) {
-    const templateFile = app.args.template || 'template.ejs';
+  async activate() {
+    const templateFile = fulcrum.args.template || 'template.ejs';
 
     this.template = fs.readFileSync(path.join(__dirname, templateFile)).toString();
-    this.ReportGenerator = app.api.ReportGenerator;
-    this.app = app;
-    // app.on('record:save', this.onRecordSave);
+
+    // fulcrum.on('record:save', this.onRecordSave);
   }
 
   onRecordSave = async ({record}) => {
@@ -49,20 +42,20 @@ export default class ReportPlugin extends Plugin {
   runReport = async ({record, template, header, footer, cover}) => {
     const params = {
       reportName: record.displayValue || record.id,
-      directory: this.app.dir('reports'),
+      directory: fulcrum.dir('reports'),
       template: template || this.template,
       header,
       footer,
       cover,
       data: {
-        DateUtils: this.app.api.core.DateUtils,
+        DateUtils: core.DateUtils,
         record: record,
         renderValues: this.renderValues
       },
       ejsOptions: {}
     };
 
-    await this.ReportGenerator.generate(params);
+    await ReportGenerator.generate(params);
   }
 
   renderValues = (feature, renderFunction) => {
