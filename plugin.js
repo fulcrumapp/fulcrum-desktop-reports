@@ -3,10 +3,35 @@ import fs from 'fs';
 import { ReportGenerator, core } from 'fulcrum';
 
 export default class {
-  async task() {
-    fulcrum.yargs.usage('Usage: reports --org [org] --form [form name] --where [where clause] --template [template file]')
-      .demandOption([ 'org', 'form' ])
-      .argv;
+  async task(cli) {
+    return cli.command({
+      command: 'reports',
+      desc: 'run the pdf reports sync for a specific organization',
+      builder: {
+        org: {
+          desc: 'organization name',
+          required: true,
+          type: 'string'
+        },
+        form: {
+          desc: 'form name',
+          type: 'string'
+        },
+        where: {
+          desc: 'sql where clause',
+          type: 'string'
+        },
+        template: {
+          desc: 'path to ejs template file',
+          type: 'string'
+        }
+      },
+      handler: this.runCommand
+    });
+  }
+
+  runCommand = async () => {
+    await this.activate();
 
     const account = await fulcrum.fetchAccount(fulcrum.args.org);
 
