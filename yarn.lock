@@ -290,6 +290,10 @@ babel-plugin-check-es2015-constants@^6.22.0:
   dependencies:
     babel-runtime "^6.22.0"
 
+babel-plugin-fulcrum-sync@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-fulcrum-sync/-/babel-plugin-fulcrum-sync-1.0.0.tgz#c38087ffcb58833edd16da6e5ac9991410b8d80b"
+
 babel-plugin-syntax-async-functions@^6.8.0:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-async-functions/-/babel-plugin-syntax-async-functions-6.13.0.tgz#cad9cad1191b5ad634bf30ae0872391e0647be95"
@@ -1004,9 +1008,9 @@ fstream@^1.0.0, fstream@^1.0.10, fstream@^1.0.2:
     mkdirp ">=0.5 0"
     rimraf "2"
 
-fulcrum-sync-plugin@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/fulcrum-sync-plugin/-/fulcrum-sync-plugin-1.2.0.tgz#e334c47787996be920862e6b8dc0f63f95b221ab"
+fulcrum-sync-plugin@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/fulcrum-sync-plugin/-/fulcrum-sync-plugin-1.4.0.tgz#a2bcf23596430a1f982a2d874d6e6ea278654051"
   dependencies:
     babel-cli "^6.24.1"
     babel-core "^6.24.1"
