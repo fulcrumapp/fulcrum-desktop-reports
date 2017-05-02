@@ -1,11 +1,11 @@
-## Fulcrum Sync Reports
+## Fulcrum Desktop Reports
 
 Generate custom PDF reports from Fulcrum data.
 
 ### Installation
 
 ```sh
-fulcrum install-plugin --url https://github.com/fulcrumapp/fulcrum-sync-reports
+fulcrum install-plugin --url https://github.com/fulcrumapp/fulcrum-desktop-reports
 ```
 
 ### Run reports
