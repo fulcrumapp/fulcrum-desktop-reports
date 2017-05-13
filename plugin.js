@@ -53,10 +53,11 @@ export default class {
   }
 
   async activate() {
-    const templateFile = fulcrum.args.template || 'template.ejs';
+    const templateFile = fulcrum.args.template || path.join(__dirname, 'template.ejs');
 
-    this.template = fs.readFileSync(path.join(__dirname, templateFile)).toString();
+    this.template = fs.readFileSync(templateFile).toString();
 
+    fulcrum.mkdirp('reports')
     // fulcrum.on('record:save', this.onRecordSave);
   }
 
