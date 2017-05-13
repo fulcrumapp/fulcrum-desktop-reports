@@ -9,7 +9,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "fulcrum-desktop-plugin": "^1.4.0"
+    "fulcrum-desktop-plugin": "^1.4.0",
+    "mkdirp": "^0.5.1"
   },
   "babel": {
     "plugins": [

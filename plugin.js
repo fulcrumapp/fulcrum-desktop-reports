@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import mkdirp from 'mkdirp';
 import { ReportGenerator, core } from 'fulcrum';
 
 export default class {
@@ -23,6 +24,10 @@ export default class {
         },
         template: {
           desc: 'path to ejs template file',
+          type: 'string'
+        },
+        reportPath: {
+          desc: 'report storage directory',
           type: 'string'
         }
       },
@@ -57,7 +62,9 @@ export default class {
 
     this.template = fs.readFileSync(templateFile).toString();
 
-    fulcrum.mkdirp('reports')
+    this.reportPath = fulcrum.args.reportPath || fulcrum.dir('reports');
+
+    mkdirp.sync(this.reportPath);
     // fulcrum.on('record:save', this.onRecordSave);
   }
 
@@ -68,7 +75,7 @@ export default class {
   runReport = async ({record, template, header, footer, cover}) => {
     const params = {
       reportName: record.displayValue || record.id,
-      directory: fulcrum.dir('reports'),
+      directory: this.reportPath,
       template: template || this.template,
       header,
       footer,
