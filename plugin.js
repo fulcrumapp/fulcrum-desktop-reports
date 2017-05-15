@@ -171,7 +171,7 @@ export default class {
       return path.join(fulcrum.args.mediaPath, 'photos', item.mediaID + '.jpg');
     }
 
-    const url = APIClient.getPhotoURL(this.account, {id: item.mediaID});
+    const url = APIClient.getPhotoURL(this.account, {id: item.mediaID}).replace('?', '/large?');
 
     if (url.indexOf('.jpg') === -1) {
       return url.replace('?', '.jpg?');
