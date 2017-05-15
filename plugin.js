@@ -131,6 +131,12 @@ export default class {
   runReport = async ({record, template, header, footer, cover}) => {
     const fileName = this.fileName === 'title' ? record.displayValue || record.id : record.id;
 
+    const outputFileName = path.join(this.reportPath, fileName + '.pdf');
+
+    if (fs.existsSync(outputFileName) && fs.statSync(outputFileName).size > 0) {
+      return;
+    }
+
     const params = {
       reportName: fileName,
       directory: this.reportPath,
