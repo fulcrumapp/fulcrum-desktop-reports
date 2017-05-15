@@ -48,7 +48,7 @@ export default class {
           type: 'string'
         },
         concurrency: {
-          desc: 'concurrent downloads (between 1 and 10)',
+          desc: 'concurrent reports (between 1 and 10)',
           type: 'number',
           default: 5
         },
