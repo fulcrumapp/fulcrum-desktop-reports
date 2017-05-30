@@ -19,8 +19,8 @@ export default class {
           desc: 'form name',
           type: 'string'
         },
-        where: {
-          desc: 'sql where clause',
+        skip: {
+          desc: 'skip form name',
           type: 'string'
         },
         template: {
@@ -72,21 +72,25 @@ export default class {
 
     const account = await fulcrum.fetchAccount(fulcrum.args.org);
 
+    const skipForms = fulcrum.args.skip || [];
+
     if (account) {
       this.account = account;
 
-      const form = await account.findFirstForm({name: fulcrum.args.form});
+      const forms = await account.findForms({});
 
-      const records = await form.findRecordsBySQL(fulcrum.args.where);
-
-      const concurrency = Math.min(Math.max(1, fulcrum.args.concurrency || 5), 10);
+      const concurrency = Math.min(Math.max(1, fulcrum.args.concurrency || 5), 50);
 
       this.queue = new ConcurrentQueue(this.workerFunction, concurrency);
 
-      for (const record of records) {
-        await record.getForm();
+      for (const form of forms) {
+        if (skipForms.indexOf(form.name) > -1) {
+          continue;
+        }
 
-        this.queue.push({record});
+        await form.findEachRecord({}, async (record) => {
+          this.queue.push({id: record.rowID});
+        });
       }
 
       await this.queue.drain();
@@ -118,7 +122,11 @@ export default class {
 
   workerFunction = async (task) => {
     try {
-      await this.runReport({record: task.record});
+      const record = await this.account.findFirstRecord({id: task.id});
+
+      await record.getForm();
+
+      await this.runReport({record});
     } catch (err) {
       console.error('Error', err);
     }

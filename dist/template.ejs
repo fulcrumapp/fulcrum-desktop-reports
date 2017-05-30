@@ -128,10 +128,10 @@
           <h1 class="field-section"><%= element.label %></h1>
           <div class='field-clear'></div>
         <% } else if (element.isRepeatableElement) { %>
-          <h1 class="field-section"><%= value.displayValue %></h1>
+          <h1 class="field-section"><%= value && value.displayValue %></h1>
           <div class='field-clear'></div>
         <% } else { %>
-          <% if (!value.isEmpty) { %>
+          <% if (value && !value.isEmpty) { %>
             <div class="field">
               <h2 class="field-label"><%= element.label %></h2>
               <div class="field-value"><%= value.displayValue %></div>
