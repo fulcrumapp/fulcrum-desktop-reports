@@ -17,11 +17,11 @@ export default class {
         },
         form: {
           desc: 'form name',
-          type: 'string'
+          type: 'array'
         },
         skip: {
           desc: 'skip form name',
-          type: 'string'
+          type: 'array'
         },
         template: {
           desc: 'path to ejs template file',
@@ -73,6 +73,7 @@ export default class {
     const account = await fulcrum.fetchAccount(fulcrum.args.org);
 
     const skipForms = fulcrum.args.skip || [];
+    const includeForms = fulcrum.args.form != null ? fulcrum.args.form : null;
 
     if (account) {
       this.account = account;
@@ -85,6 +86,10 @@ export default class {
 
       for (const form of forms) {
         if (skipForms.indexOf(form.name) > -1) {
+          continue;
+        }
+
+        if (includeForms && includeForms.indexOf(form.name) === -1) {
           continue;
         }
 
