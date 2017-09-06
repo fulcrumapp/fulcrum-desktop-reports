@@ -3,6 +3,7 @@ import fs from 'fs';
 import mkdirp from 'mkdirp';
 import { ReportGenerator, APIClient, core } from 'fulcrum';
 import ConcurrentQueue from './concurrent-queue';
+import wkhtmltopdf from 'wkhtmltopdf-installer';
 
 export default class {
   async task(cli) {
@@ -163,7 +164,10 @@ export default class {
         renderValues: this.renderValues,
         getPhotoURL: this.getPhotoURL
       },
-      ejsOptions: {}
+      ejsOptions: {},
+      reportOptions: {
+        wkhtmltopdf: wkhtmltopdf.path
+      }
     };
 
     await this.generatePDF(params);
