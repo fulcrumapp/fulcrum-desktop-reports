@@ -3,7 +3,6 @@ import fs from 'fs';
 import mkdirp from 'mkdirp';
 import { ReportGenerator, APIClient, core } from 'fulcrum';
 import ConcurrentQueue from './concurrent-queue';
-import wkhtmltopdf from 'wkhtmltopdf-installer';
 
 export default class {
   async task(cli) {
@@ -62,6 +61,10 @@ export default class {
           desc: 'recursively print all child items in each PDF',
           type: 'boolean',
           default: true
+        },
+        wkhtmltopdf: {
+          desc: 'path to wkhtmltopdf binary',
+          type: 'string'
         }
       },
       handler: this.runCommand
@@ -166,7 +169,7 @@ export default class {
       },
       ejsOptions: {},
       reportOptions: {
-        wkhtmltopdf: wkhtmltopdf.path
+        wkhtmltopdf: fulcrum.args.wkhtmltopdf
       }
     };
 

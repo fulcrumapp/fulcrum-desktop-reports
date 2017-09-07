@@ -11,8 +11,7 @@
   "dependencies": {
     "async": "^2.4.0",
     "fulcrum-desktop-plugin": "^1.4.0",
-    "mkdirp": "^0.5.1",
-    "wkhtmltopdf-installer": "^0.3.1"
+    "mkdirp": "^0.5.1"
   },
   "babel": {
     "plugins": [
