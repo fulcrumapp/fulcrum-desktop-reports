@@ -125,7 +125,7 @@ export default class {
     this.reportsPath = fulcrum.args.reportsPath || fulcrum.dir('reports');
     this.reportsFileName = fulcrum.args.reportsFileName === 'title' ? 'title' : 'id';
 
-    mkdirp.sync(this.reportPath);
+    mkdirp.sync(this.reportsPath);
     // fulcrum.on('record:save', this.onRecordSave);
   }
 
@@ -148,7 +148,7 @@ export default class {
   runReport = async ({record, template, header, footer, cover}) => {
     const fileName = this.reportsFileName === 'title' ? record.displayValue || record.id : record.id;
 
-    const outputFileName = path.join(this.reportPath, fileName + '.pdf');
+    const outputFileName = path.join(this.reportsPath, fileName + '.pdf');
 
     if (fs.existsSync(outputFileName) && fs.statSync(outputFileName).size > 0) {
       return;
@@ -156,7 +156,7 @@ export default class {
 
     const params = {
       reportName: fileName,
-      directory: this.reportPath,
+      directory: this.reportsPath,
       template: template || this.template,
       header: header || this.header,
       footer: footer || this.footer,
