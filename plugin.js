@@ -19,50 +19,50 @@ export default class {
           desc: 'form name',
           type: 'array'
         },
-        skip: {
+        reportsSkip: {
           desc: 'skip form name',
           type: 'array'
         },
-        template: {
+        reportsTemplate: {
           desc: 'path to ejs template file',
           type: 'string'
         },
-        header: {
+        reportsHeader: {
           desc: 'path to header ejs template file',
           type: 'string'
         },
-        footer: {
+        reportsFooter: {
           desc: 'path to footer ejs template file',
           type: 'string'
         },
-        reportPath: {
+        reportsPath: {
           desc: 'report storage directory',
           type: 'string'
         },
-        mediaPath: {
+        reportsMediaPath: {
           desc: 'media storage directory',
           type: 'string'
         },
-        fileName: {
+        reportsFileName: {
           desc: 'file name',
           type: 'string'
         },
-        concurrency: {
+        reportsConcurrency: {
           desc: 'concurrent reports (between 1 and 10)',
           type: 'number',
           default: 5
         },
-        repeatables: {
+        reportsRepeatables: {
           desc: 'generate a PDF for each repeatable child record',
           type: 'boolean',
           default: false
         },
-        recurse: {
+        reportsRecurse: {
           desc: 'recursively print all child items in each PDF',
           type: 'boolean',
           default: true
         },
-        wkhtmltopdf: {
+        reportsWkhtmltopdf: {
           desc: 'path to wkhtmltopdf binary',
           type: 'string'
         }
@@ -76,7 +76,7 @@ export default class {
 
     const account = await fulcrum.fetchAccount(fulcrum.args.org);
 
-    const skipForms = fulcrum.args.skip || [];
+    const skipForms = fulcrum.args.reportsSkip || [];
     const includeForms = fulcrum.args.form != null ? fulcrum.args.form : null;
 
     if (account) {
@@ -84,7 +84,7 @@ export default class {
 
       const forms = await account.findForms({});
 
-      const concurrency = Math.min(Math.max(1, fulcrum.args.concurrency || 5), 50);
+      const concurrency = Math.min(Math.max(1, fulcrum.args.reportsConcurrency || 5), 50);
 
       this.queue = new ConcurrentQueue(this.workerFunction, concurrency);
 
@@ -110,20 +110,20 @@ export default class {
   }
 
   async activate() {
-    const templateFile = fulcrum.args.template || path.join(__dirname, 'template.ejs');
+    const templateFile = fulcrum.args.reportsTemplate || path.join(__dirname, 'template.ejs');
 
     this.template = fs.readFileSync(templateFile).toString();
 
-    if (fulcrum.args.header) {
-      this.header = fs.readFileSync(fulcrum.args.header).toString();
+    if (fulcrum.args.reportsHeader) {
+      this.header = fs.readFileSync(fulcrum.args.reportsHeader).toString();
     }
 
-    if (fulcrum.args.footer) {
-      this.footer = fs.readFileSync(fulcrum.args.footer).toString();
+    if (fulcrum.args.reportsFooter) {
+      this.footer = fs.readFileSync(fulcrum.args.reportsFooter).toString();
     }
 
-    this.reportPath = fulcrum.args.reportPath || fulcrum.dir('reports');
-    this.fileName = fulcrum.args.fileName === 'title' ? 'title' : 'id';
+    this.reportsPath = fulcrum.args.reportsPath || fulcrum.dir('reports');
+    this.reportsFileName = fulcrum.args.reportsFileName === 'title' ? 'title' : 'id';
 
     mkdirp.sync(this.reportPath);
     // fulcrum.on('record:save', this.onRecordSave);
@@ -146,7 +146,7 @@ export default class {
   }
 
   runReport = async ({record, template, header, footer, cover}) => {
-    const fileName = this.fileName === 'title' ? record.displayValue || record.id : record.id;
+    const fileName = this.reportsFileName === 'title' ? record.displayValue || record.id : record.id;
 
     const outputFileName = path.join(this.reportPath, fileName + '.pdf');
 
@@ -169,15 +169,15 @@ export default class {
       },
       ejsOptions: {},
       reportOptions: {
-        wkhtmltopdf: fulcrum.args.wkhtmltopdf
+        wkhtmltopdf: fulcrum.args.reportsWkhtmltopdf
       }
     };
 
     await this.generatePDF(params);
 
-    if (fulcrum.args.repeatables) {
+    if (fulcrum.args.reportsRepeatables) {
       for (const item of record.formValues.repeatableItems) {
-        const repeatableFileName = this.fileName === 'title' ? `${fileName} - ${item.displayValue}` : item.id;
+        const repeatableFileName = this.reportsFileName === 'title' ? `${fileName} - ${item.displayValue}` : item.id;
 
         params.reportName = repeatableFileName;
         params.data.record = item;
@@ -193,8 +193,8 @@ export default class {
   }
 
   getPhotoURL = (item) => {
-    if (fulcrum.args.mediaPath) {
-      return path.join(fulcrum.args.mediaPath, 'photos', item.mediaID + '.jpg');
+    if (fulcrum.args.reportsMediaPath) {
+      return path.join(fulcrum.args.reportsMediaPath, 'photos', item.mediaID + '.jpg');
     }
 
     const url = APIClient.getPhotoURL(this.account, {id: item.mediaID}).replace('?', '/large?');
@@ -221,7 +221,7 @@ export default class {
       } else if (element.isRepeatableElement) {
         let shouldRecurse = true;
 
-        if (element.isRepeatableElement && fulcrum.args.recurse === false) {
+        if (element.isRepeatableElement && fulcrum.args.reportsRecurse === false) {
           shouldRecurse = false;
         }
 
